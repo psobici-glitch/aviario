@@ -529,12 +529,17 @@ function criarUsuario(){
   const perfil=document.getElementById('nu-perfil').value;
   if(!nome||!user||!pass){alert('Preencha todos os campos.');return}
   if(usuarios.find(u=>u.user===user)){alert('Usuário já existe.');return}
-  usuarios.push({nome,user,pass,perfil});
+  const novoUser={nome,user,pass,perfil};
+  usuarios.push(novoUser);
   localStorage.setItem('usuarios',JSON.stringify(usuarios));
+  adicionarPendente('usuario','upsert',novoUser);
   renderListaUsuarios();
   closeModal('modal-novo-user');
-  document.getElementById('nu-nome').value='';document.getElementById('nu-user').value='';document.getElementById('nu-pass').value='';
-  alert(`Usuário "${nome}" criado!`);
+  document.getElementById('nu-nome').value='';
+  document.getElementById('nu-user').value='';
+  document.getElementById('nu-pass').value='';
+  salvarTudo();
+  alert(`Usuário "${nome}" criado! Sincronizando...`);
 }
 
 function excluirUsuario(user){
