@@ -271,7 +271,7 @@
       <div class="form-group">
         <label class="form-label">URL do Apps Script</label>
         <div style="display:flex;gap:6px">
-          <input class="form-control" id="gas-url" placeholder="https://script.google.com/macros/s/..." style="font-size:12px">
+          <input class="form-control" id="gas-url" placeholder="https://script.google.com/macros/s/..." style="font-size:12px" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
           <button class="btn btn-primary btn-sm" onclick="salvarURL()">Salvar</button>
         </div>
       </div>
@@ -468,7 +468,8 @@ let agendamentos=JSON.parse(localStorage.getItem('ag')||'[]');
 let registros=JSON.parse(localStorage.getItem('reg')||'[]');
 let pendentes=JSON.parse(localStorage.getItem('pendentes')||'[]');
 let usuarios=JSON.parse(localStorage.getItem('usuarios')||'[]');
-let gasURL=localStorage.getItem('gasURL')||'https://script.google.com/macros/s/AKfycbznH3BOhSQEZwtkKSzcco3f7JpCPNLiDMRifRECR3bD-8cyqdJV_JOqss4c45JW4SwWkQ/exec';
+let gasURL='https://script.google.com/macros/s/AKfycbznH3BOhSQEZwtkKSzcco3f7JpCPNLiDMRifRECR3bD-8cyqdJV_JOqss4c45JW4SwWkQ/exec';
+localStorage.setItem('gasURL',gasURL);
 let usuarioLogado=null;
 let semanaOffset=0,diaSel=hoje(),agAtual=null,regAtual=null,filtroReg='todos',periodoAtivo=30;
 
