@@ -279,6 +279,7 @@
     <button class="btn btn-primary" onclick="testarConexao()">🔌 Testar Conexão</button>
     <button class="btn btn-secondary" onclick="sincronizarPendentes()">🔄 Enviar Pendentes</button>
     <button class="btn btn-secondary" onclick="baixarDoSheets()">⬇️ Baixar do Sheets</button>
+    <button class="btn btn-secondary" onclick="forcarSyncUsuarios()">👥 Sincronizar Usuários</button>
     <div class="sync-log" id="sync-log">// Log de sincronização...</div>
   </div>
 
@@ -928,6 +929,23 @@ function populateSelects(){['ag-servico','reg-servico'].forEach(id=>{const s=doc
 window.addEventListener('online',()=>{log('🌐 Conexão restaurada. Sincronizando...');sincronizarCompleto()});
 
 async function sincronizarCompleto(){
+  await sincronizarPendentes();
+  await baixarDoSheets(true);
+}
+
+async function forcarSyncUsuarios(){
+  if(!navigator.onLine){alert('Sem internet.');return}
+  log('👥 Forçando sync de usuários...');
+  for(const u of usuarios){
+    try{
+      const r=await fetch(gasURL,{method:'POST',body:JSON.stringify({tipo:'usuario',acao:'upsert',payload:u}),headers:{'Content-Type':'text/plain'}});
+      const j=await r.json();
+      if(j.ok)log(`✅ ${u.nome} sincronizado`);
+      else log(`❌ ${u.nome}: ${j.erro}`);
+    }catch(e){log(`❌ ${u.nome}: ${e.message}`)}
+  }
+  log('🎉 Sync de usuários concluído!');
+}
   await sincronizarPendentes();
   await baixarDoSheets(true);
 }
