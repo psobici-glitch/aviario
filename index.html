@@ -488,8 +488,11 @@ function salvarTudo(){localStorage.setItem('ag',JSON.stringify(agendamentos));lo
 // ── LOGIN ────────────────────────────────────────────────
 function fazerLogin(){
   const u=document.getElementById('login-user').value.trim().toLowerCase();
-  const p=document.getElementById('login-pass').value;
-  const found=usuarios.find(x=>x.user.toLowerCase()===u&&x.pass===p);
+  const p=document.getElementById('login-pass').value.trim();
+  console.log('Tentando login:', u, p);
+  console.log('Usuários disponíveis:', JSON.stringify(usuarios));
+  const found=usuarios.find(x=>x.user.toLowerCase()===u&&String(x.pass)===String(p));
+  console.log('Encontrado:', found);
   if(!found){document.getElementById('login-error').style.display='block';return}
   usuarioLogado=found;
   localStorage.setItem('sessao',JSON.stringify(found));
