@@ -963,49 +963,31 @@ setInterval(()=>{if(navigator.onLine&&gasURL&&usuarioLogado)sincronizarCompleto(
 function initApp(){populateSelects();atualizarHome();atualizarBadge();renderClientes(CLIENTES);renderSemana();}
 
 // ── INIT ────────────────────────────────────────────────
-async function init(){
-  // Tenta buscar usuários do Sheets antes de mostrar o login
-  if(navigator.onLine&&gasURL){
-    try{
-      document.getElementById('login-screen').innerHTML=`
-        <div class="login-logo">🐔</div>
-        <div class="login-title">Aviário Serviços</div>
-        <div class="login-sub">Carregando...</div>
-        <div style="margin-top:24px;width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div>
-        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-      const r=await fetch(gasURL+'?acao=listar');
-      const j=await r.json();
-      if(j.ok){
-        if(j.usuarios&&j.usuarios.length){
-          usuarios=j.usuarios;
-          localStorage.setItem('usuarios',JSON.stringify(usuarios));
-        }
-        if(j.agendamentos&&j.agendamentos.length){agendamentos=j.agendamentos;localStorage.setItem('ag',JSON.stringify(agendamentos))}
-        if(j.registros&&j.registros.length){registros=j.registros;localStorage.setItem('reg',JSON.stringify(registros))}
-      }
-    }catch(e){console.warn('Sync inicial falhou:',e.message)}
-  }
-  // Restaura tela de login
-  document.getElementById('login-screen').innerHTML=`
-    <div class="login-logo">🐔</div>
-    <div class="login-title">Aviário Serviços</div>
-    <div class="login-sub">Limpeza & Comercialização</div>
-    <div class="login-card">
-      <h2>Entrar no sistema</h2>
-      <div class="login-error" id="login-error">Usuário ou senha incorretos</div>
-      <div class="form-group">
-        <label class="form-label">Usuário</label>
-        <input class="form-control" id="login-user" placeholder="Seu nome de usuário">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Senha</label>
-        <input class="form-control" type="password" id="login-pass" placeholder="••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
-      </div>
-      <button class="btn btn-primary" onclick="fazerLogin()">Entrar</button>
-      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">Primeiro acesso? Peça ao administrador para criar seu usuário.</p>
-    </div>`;
+function init(){
   verificarSessao();
+  // Sync em background sem await no topo
+  if(navigator.onLine&&gasURL){
+    syncInicial();
+  }
 }
+
+async function syncInicial(){
+  try{
+    const r=await fetch(gasURL+'?acao=listar');
+    const j=await r.json();
+    if(j.ok){
+      if(j.usuarios&&j.usuarios.length){
+        const temAdmin=j.usuarios.find(u=>u.user==='admin');
+        if(!temAdmin)j.usuarios.unshift(ADMIN_PADRAO);
+        usuarios=j.usuarios;
+        localStorage.setItem('usuarios',JSON.stringify(usuarios));
+      }
+      if(j.agendamentos&&j.agendamentos.length){agendamentos=j.agendamentos;localStorage.setItem('ag',JSON.stringify(agendamentos))}
+      if(j.registros&&j.registros.length){registros=j.registros;localStorage.setItem('reg',JSON.stringify(registros))}
+    }
+  }catch(e){console.warn('Sync inicial falhou:',e.message)}
+}
+
 init();
 </script>
 </body>
