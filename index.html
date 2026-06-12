@@ -474,9 +474,13 @@ localStorage.setItem('gasURL',gasURL);
 let usuarioLogado=null;
 let semanaOffset=0,diaSel=hoje(),agAtual=null,regAtual=null,filtroReg='todos',periodoAtivo=30;
 
-// Admin padrão se não existir nenhum usuário
+// Admin padrão SEMPRE disponível como fallback
+const ADMIN_PADRAO={nome:'Administrador',user:'admin',pass:'admin123',perfil:'admin'};
 if(!usuarios.length){
-  usuarios=[{nome:'Administrador',user:'admin',pass:'admin123',perfil:'admin'}];
+  usuarios=[ADMIN_PADRAO];
+  localStorage.setItem('usuarios',JSON.stringify(usuarios));
+} else if(!usuarios.find(u=>u.user==='admin')){
+  usuarios.unshift(ADMIN_PADRAO);
   localStorage.setItem('usuarios',JSON.stringify(usuarios));
 }
 
