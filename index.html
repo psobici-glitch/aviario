@@ -265,13 +265,15 @@
     <button class="btn btn-primary" style="margin-top:10px" onclick="document.getElementById('modal-novo-user').classList.add('open')">+ Adicionar Usuário</button>
   </div>
 
-  <div class="card">
+  <div class="card" id="card-sync">
     <div class="card-title">☁️ Sincronização Google Sheets</div>
-    <div class="form-group">
-      <label class="form-label">URL do Apps Script</label>
-      <div style="display:flex;gap:6px">
-        <input class="form-control" id="gas-url" placeholder="https://script.google.com/macros/s/..." style="font-size:12px">
-        <button class="btn btn-primary btn-sm" onclick="salvarURL()">Salvar</button>
+    <div id="url-section" style="display:none">
+      <div class="form-group">
+        <label class="form-label">URL do Apps Script</label>
+        <div style="display:flex;gap:6px">
+          <input class="form-control" id="gas-url" placeholder="https://script.google.com/macros/s/..." style="font-size:12px">
+          <button class="btn btn-primary btn-sm" onclick="salvarURL()">Salvar</button>
+        </div>
       </div>
     </div>
     <button class="btn btn-primary" onclick="testarConexao()">🔌 Testar Conexão</button>
@@ -495,7 +497,10 @@ function fazerLogin(){
   document.getElementById('usuario-label').textContent='👤 '+found.nome;
   document.getElementById('cfg-nome-usuario').textContent=found.nome;
   document.getElementById('cfg-perfil-usuario').textContent=found.perfil==='admin'?'Administrador':'Usuário';
-  if(found.perfil==='admin')document.getElementById('card-admin').style.display='block';
+  if(found.perfil==='admin'){
+    document.getElementById('card-admin').style.display='block';
+    document.getElementById('url-section').style.display='block';
+  }
   renderListaUsuarios();
   if(gasURL)document.getElementById('gas-url').value=gasURL;
   initApp();
@@ -516,7 +521,10 @@ function verificarSessao(){
   if(s){
     const u=JSON.parse(s);
     const valid=usuarios.find(x=>x.user===u.user&&x.pass===u.pass);
-    if(valid){usuarioLogado=valid;document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('usuario-label').textContent='👤 '+valid.nome;document.getElementById('cfg-nome-usuario').textContent=valid.nome;document.getElementById('cfg-perfil-usuario').textContent=valid.perfil==='admin'?'Administrador':'Usuário';if(valid.perfil==='admin')document.getElementById('card-admin').style.display='block';if(gasURL)document.getElementById('gas-url').value=gasURL;initApp();return}
+    if(valid){usuarioLogado=valid;document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('usuario-label').textContent='👤 '+valid.nome;document.getElementById('cfg-nome-usuario').textContent=valid.nome;document.getElementById('cfg-perfil-usuario').textContent=valid.perfil==='admin'?'Administrador':'Usuário';  if(valid.perfil==='admin'){
+    document.getElementById('card-admin').style.display='block';
+    document.getElementById('url-section').style.display='block';
+  }if(gasURL)document.getElementById('gas-url').value=gasURL;initApp();return}
   }
   document.getElementById('login-screen').style.display='flex';
 }
