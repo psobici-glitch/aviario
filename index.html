@@ -896,8 +896,35 @@ function populateSelects(){
 
 function initApp(){populateSelects();atualizarHome();atualizarBadge();renderClientes(CLIENTES);renderSemana();}
 
-// INIT — sem async no topo
-verificarSessao();
+// INIT — busca usuários do Sheets antes de mostrar login
+document.getElementById('login-screen').style.display='none';
+document.getElementById('app').style.display='none';
+document.body.innerHTML+='<div id="splash" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#1b5e20"><div style="font-size:64px">🐔</div><div style="font-size:22px;font-weight:800;color:#fff;margin:8px 0">Aviário Serviços</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:24px">Carregando...</div><div style="width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div>';
+
+function mostrarLogin(){
+  var splash=document.getElementById('splash');
+  if(splash)splash.remove();
+  document.getElementById('login-screen').style.display='flex';
+  verificarSessao();
+}
+
+if(navigator.onLine){
+  fetch(GAS_URL+'?acao=listar')
+  .then(function(r){return r.json();})
+  .then(function(j){
+    if(j.ok&&j.usuarios&&j.usuarios.length){
+      if(!j.usuarios.find(function(u){return u.user==='admin';}))j.usuarios.unshift(ADMIN_PADRAO);
+      usuarios=j.usuarios;
+      localStorage.setItem('usuarios',JSON.stringify(usuarios));
+    }
+    if(j.ok&&j.agendamentos&&j.agendamentos.length){agendamentos=j.agendamentos;localStorage.setItem('ag',JSON.stringify(agendamentos));}
+    if(j.ok&&j.registros&&j.registros.length){registros=j.registros;localStorage.setItem('reg',JSON.stringify(registros));}
+    mostrarLogin();
+  })
+  .catch(function(){mostrarLogin();});
+} else {
+  mostrarLogin();
+}
 </script>
 </body>
 </html>
